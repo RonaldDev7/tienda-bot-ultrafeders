@@ -55,4 +55,4 @@ client.once('ready', async () => {
 });
 
 // 🔑 Inicia sesión
-client.login(TOKEN);
+client.login(process.env.TOKEN);

@@ -67,4 +67,4 @@ client.once('ready', async () => {
   process.exit();
 });
 
-client.login(TOKEN);
+client.login(process.env.TOKEN);
