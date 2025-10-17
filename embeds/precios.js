@@ -33,18 +33,18 @@ client.once('ready', async () => {
     .setColor(0x2b8cff)
     .addFields(
       // fila 1
-      { name: '⏣ 200 Robux', value: '> 🇨🇴 5.775 COP\n> 🇺🇸 1.4 USD\n> 🇲🇽 31 MXN\n> 🇵🇪 5.5 PEN', inline: true },
-      { name: '⏣ 500 Robux', value: '> 🇨🇴 14,438 COP\n> 🇺🇸 3.5 USD\n> 🇲🇽 77 MXN\n> 🇵🇪 13.8 PEN', inline: true },
-      { name: '⏣ 1,000 Robux', value: '> 🇨🇴 28,875 COP\n> 🇺🇸 7 USD\n> 🇲🇽 153.4 MXN\n> 🇵🇪 27.5 PEN', inline: true },
+      { name: '⏣ 200 Robux', value: '> 🇨🇴 6,200 COP\n> 🇺🇸 1.5 USD\n> 🇲🇽 33 MXN\n> 🇵🇪 6 PEN', inline: true },
+      { name: '⏣ 500 Robux', value: '> 🇨🇴 15,500 COP\n> 🇺🇸 3.75 USD\n> 🇲🇽 82 MXN\n> 🇵🇪 15 PEN', inline: true },
+      { name: '⏣ 1,000 Robux', value: '> 🇨🇴 31,000 COP\n> 🇺🇸 7.5 USD\n> 🇲🇽 164.5 MXN\n> 🇵🇪 29.5 PEN', inline: true },
 
       // fila 2
-      { name: '⏣ 2,000 Robux', value: '> 🇨🇴 57,750 COP\n> 🇺🇸 14 USD\n> 🇲🇽 306.6 MXN\n> 🇵🇪 55.2 PEN', inline: true },
-      { name: '⏣ 4,000 Robux', value: '> 🇨🇴 115,500 COP\n> 🇺🇸 28 USD\n> 🇲🇽 613.2 MXN\n> 🇵🇪 110.5 PEN', inline: true },
-      { name: '⏣ 8,000 Robux', value: '> 🇨🇴 173,250 COP\n> 🇺🇸 42 USD\n> 🇲🇽 1,226 MXN\n> 🇵🇪 165.6 PEN', inline: true },
+      { name: '⏣ 2,000 Robux', value: '> 🇨🇴 62,000 COP\n> 🇺🇸 15 USD\n> 🇲🇽 329 MXN\n> 🇵🇪 59 PEN', inline: true },
+      { name: '⏣ 4,000 Robux', value: '> 🇨🇴 124,000 COP\n> 🇺🇸 30 USD\n> 🇲🇽 657.5 MXN\n> 🇵🇪 118 PEN', inline: true },
+      { name: '⏣ 8,000 Robux', value: '> 🇨🇴 247,500 COP\n> 🇺🇸 60 USD\n> 🇲🇽 1,315 MXN\n> 🇵🇪 236 PEN', inline: true },
 
       // fila 3 (dos precios + espacio para mantener columnas alineadas)
-      { name: '⏣ 10,000 Robux', value: '> 🇨🇴 288,750 COP\n> 🇺🇸 79 USD\n> 🇲🇽 1,533 MXN\n> 🇵🇪 276 PEN', inline: true },
-      { name: '⏣ 20,000 Robux', value: '> 🇨🇴 577,500 COP\n> 🇺🇸 140 USD\n> 🇲🇽 3,066 MXN\n> 🇵🇪 552 PEN', inline: true },
+      { name: '⏣ 10,000 Robux', value: '> 🇨🇴 309,400 COP\n> 🇺🇸 75 USD\n> 🇲🇽 1,643.5 MXN\n> 🇵🇪 295 PEN', inline: true },
+      { name: '⏣ 20,000 Robux', value: '> 🇨🇴 618,800 COP\n> 🇺🇸 150 USD\n> 🇲🇽 3,287 MXN\n> 🇵🇪 590 PEN', inline: true },
       { name: '\u200B', value: '\u200B', inline: true } // hueco para mantener la estructura 3xN
     )
     .addFields(
