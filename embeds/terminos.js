@@ -31,7 +31,7 @@ client.once('ready', async () => {
     .setImage("https://media.discordapp.net/attachments/1419831102779953294/1423146706765090936/fondo-textura-marmol-negro-azul-abstracto_53876-126689.png?ex=68e9cc27&is=68e87aa7&hm=25003ebbce813fac0c3335d6a826f8e0811b527b800dd81aed5ff630a4c75802&=&format=webp&quality=lossless")
     .setFooter({
       text: "Ultra Feders Shop",
-      iconURL: "https://media.discordapp.net/attachments/1419831102779953294/1423146706765090936/fondo-textura-marmol-negro-azul-abstracto_53876-126689.png?ex=68e9cc27&is=68e87aa7&hm=25003ebbce813fac0c3335d6a826f8e0811b527b800dd81aed5ff630a4c75802&=&format=webp&quality=lossless"
+      iconURL: 'https://cdn.discordapp.com/attachments/1419831102779953294/1433973290942201866/LOGO.png?ex=6906a332&is=690551b2&hm=a1cf1f28fe1246af8fd80279a7da35a94638c0368fad1d43b823e63a5d11983c'
     });
 
   // 🔘 Botones

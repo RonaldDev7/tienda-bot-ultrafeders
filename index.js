@@ -272,3 +272,9 @@ client.on('interactionCreate', async interaction => {
 });
 
 client.login(process.env.TOKEN);
+
+// === Mantener el servicio vivo en Render ===
+const express = require("express");
+const app = express();
+app.get("/", (req, res) => res.send("Bot de UF Shop activo ✅"));
+app.listen(3000, () => console.log("🌐 Servidor web escuchando en el puerto 3000"));
