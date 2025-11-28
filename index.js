@@ -32,78 +32,54 @@ const client = new Client({
   ]
 });
 
-// ========== READY ==========
 client.once('ready', async () => {
   console.log(`✅ Bot iniciado como ${client.user.tag}`);
 
-  client.guilds.cache.forEach(async guild => {
-    const cfg = getConfig(guild.id);
-    if (!cfg) {
-      console.log(`⚠️ No hay config para el servidor: ${guild.name}`);
-      return;
-    }
+  const canal = await client.channels.fetch(CANAL_ID);
+  if (!canal) return console.log('❌ Canal no encontrado.');
 
-    try {
-      const canal = await client.channels.fetch(cfg.CANAL_ID);
-      if (!canal) {
-        console.log(`❌ Canal no encontrado en ${guild.name}`);
-        return;
-      }
+  const embed = new EmbedBuilder()
+    .setTitle('🌎 ¡LISTO PARA COMPRAR!')
+    .setDescription(
+      'Selecciona tu **país de compra** para ver los métodos de pago disponibles.\n\n' +
+      '⚠️ **Importante:** No compartas contraseñas ni envíes dinero a nadie que no sea confirmado por el bot o el staff.\n\n' +
+      '💙 ¡Gracias por confiar en **UF Shop**!'
+    )
+    .setColor(0x2b8cff)
+    .setImage('https://cdn.discordapp.com/attachments/1419831102779953294/1426009467287240784/IMG-20251001-WA0029.jpg')
+    .setAuthor({
+      name: 'UF Shop Bot',
+      iconURL: 'https://cdn.discordapp.com/attachments/1419831102779953294/1426009467287240784/IMG-20251001-WA0029.jpg'
+    })
+    .setFooter({
+      text: '© UF Shop 2025 | Confianza y rapidez 💙',
+      iconURL: 'https://cdn.discordapp.com/attachments/1419831102779953294/1426009467287240784/IMG-20251001-WA0029.jpg'
+    });
 
-      const embed = new EmbedBuilder()
-        .setTitle('🌎 ¡LISTO PARA COMPRAR!')
-        .setDescription(
-          'Selecciona tu **país de compra** para ver los métodos de pago disponibles.\n\n' +
-          '⚠️ **Importante:** No compartas contraseñas ni envíes dinero a nadie que no sea confirmado por el bot o el staff.\n\n' +
-          '💙 ¡Gracias por confiar en **UF Shop**!'
-        )
-        .setColor(0x2b8cff)
-        .setImage('https://cdn.discordapp.com/attachments/1419831102779953294/1426009467287240784/IMG-20251001-WA0029.jpg')
-        .setAuthor({
-          name: 'UF Shop Bot',
-          iconURL: 'https://cdn.discordapp.com/attachments/1419831102779953294/1426009467287240784/IMG-20251001-WA0029.jpg'
-        })
-        .setFooter({
-          text: '© UF Shop 2025 | Confianza y rapidez 💙',
-          iconURL: 'https://cdn.discordapp.com/attachments/1419831102779953294/1426009467287240784/IMG-20251001-WA0029.jpg'
-        });
+  const menuPaises = new StringSelectMenuBuilder()
+    .setCustomId('seleccionar_pais')
+    .setPlaceholder('Selecciona tu país')
+    .addOptions([
+      { label: 'Global', value: 'global', emoji: '🌍' },
+      { label: 'Colombia', value: 'colombia', emoji: '🇨🇴' },
+      { label: 'Perú', value: 'peru', emoji: '🇵🇪' },
+      { label: 'México', value: 'mexico', emoji: '🇲🇽' },
+    ]);
 
-      const menuPaises = new StringSelectMenuBuilder()
-        .setCustomId('seleccionar_pais')
-        .setPlaceholder('Selecciona tu país')
-        .addOptions([
-          { label: 'Global', value: 'global', emoji: '🌍' },
-          { label: 'Colombia', value: 'colombia', emoji: '🇨🇴' },
-          { label: 'Perú', value: 'peru', emoji: '🇵🇪' },
-          { label: 'México', value: 'mexico', emoji: '🇲🇽' },
-        ]);
+  const row = new ActionRowBuilder().addComponents(menuPaises);
 
-      const row = new ActionRowBuilder().addComponents(menuPaises);
-
-      const mensajes = await canal.messages.fetch({ limit: 15 });
-      const yaExiste = mensajes.find(m => m.author.id === client.user.id);
-
-      if (!yaExiste) {
-        await canal.send({ embeds: [embed], components: [row] });
-        console.log(`📨 Panel enviado en ${guild.name}`);
-      }
-    } catch (err) {
-      console.log(`❌ Error en ${guild.name}:`, err.message);
-    }
-  });
+  const mensajes = await canal.messages.fetch({ limit: 10 });
+  const yaExiste = mensajes.find(m => m.author.id === client.user.id);
+  if (!yaExiste) {
+    await canal.send({ embeds: [embed], components: [row] });
+    console.log('📨 Mensaje enviado con selector de país.');
+  }
 });
 
-// ========= INTERACTIONS ==========
 client.on('interactionCreate', async interaction => {
-  if (!interaction.guild) return;
-  const cfg = getConfig(interaction.guild.id);
-  if (!cfg) return;
+  if (!interaction.isStringSelectMenu() && !interaction.isModalSubmit() && !interaction.isButton()) return;
 
-  if (!interaction.isStringSelectMenu() &&
-      !interaction.isModalSubmit() &&
-      !interaction.isButton()) return;
-
-  // ===== PASO 1: Seleccionar país =====
+  // === PASO 1: Seleccionar país ===
   if (interaction.customId === 'seleccionar_pais') {
     const pais = interaction.values[0];
 
@@ -111,80 +87,80 @@ client.on('interactionCreate', async interaction => {
     switch (pais) {
       case 'colombia': metodoPlaceholder = 'Nequi, Bancolombia'; break;
       case 'peru': metodoPlaceholder = 'Yape'; break;
-      case 'mexico': metodoPlaceholder = 'OXXO, Santander'; break;
-      default: metodoPlaceholder = 'Tarjeta, PayPal, Cripto...'; break;
+      case 'mexico': metodoPlaceholder = 'OXXO, Banco Santander'; break;
+      default: metodoPlaceholder = 'Tarjeta, PayPal, Criptomonedas (Binance ID)'; break;
     }
 
     const modal = new ModalBuilder()
       .setCustomId(`modal_compra_${pais}`)
       .setTitle(`🛒 Compra - ${pais.toUpperCase()}`);
 
+    const producto = new TextInputBuilder()
+      .setCustomId('producto')
+      .setLabel('¿Qué vas a comprar?')
+      .setPlaceholder("Ej: Robux")
+      .setStyle(TextInputStyle.Short)
+      .setRequired(true);
+
+    const cantidad = new TextInputBuilder()
+      .setCustomId('cantidad')
+      .setLabel('¿Cuánto vas a comprar?')
+      .setPlaceholder("Ej: 1000")
+      .setStyle(TextInputStyle.Short)
+      .setRequired(true);
+
+    const metodo = new TextInputBuilder()
+      .setCustomId('metodo')
+      .setLabel('Método de pago')
+      .setPlaceholder(metodoPlaceholder)
+      .setStyle(TextInputStyle.Short)
+      .setRequired(true);
+
+    const propina = new TextInputBuilder()
+      .setCustomId('propina')
+      .setLabel('¿Darás propina?')
+      .setPlaceholder("Escribe Si/No")
+      .setStyle(TextInputStyle.Short)
+      .setRequired(true);
+
     modal.addComponents(
-      new ActionRowBuilder().addComponents(
-        new TextInputBuilder()
-          .setCustomId('producto')
-          .setLabel('¿Qué vas a comprar?')
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true)
-      ),
-      new ActionRowBuilder().addComponents(
-        new TextInputBuilder()
-          .setCustomId('cantidad')
-          .setLabel('¿Cuánto vas a comprar?')
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true)
-      ),
-      new ActionRowBuilder().addComponents(
-        new TextInputBuilder()
-          .setCustomId('metodo')
-          .setLabel('Método de pago')
-          .setPlaceholder(metodoPlaceholder)
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true)
-      ),
-      new ActionRowBuilder().addComponents(
-        new TextInputBuilder()
-          .setCustomId('propina')
-          .setLabel('¿Darás propina?')
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true)
-      )
+      new ActionRowBuilder().addComponents(producto),
+      new ActionRowBuilder().addComponents(cantidad),
+      new ActionRowBuilder().addComponents(metodo),
+      new ActionRowBuilder().addComponents(propina)
     );
 
-    return interaction.showModal(modal);
+    await interaction.showModal(modal);
   }
 
-  // ===== PASO 2: Crear ticket =====
+  // === PASO 2: Crear ticket ===
   if (interaction.isModalSubmit() && interaction.customId.startsWith('modal_compra_')) {
     const pais = interaction.customId.split('_')[2];
     const producto = interaction.fields.getTextInputValue('producto');
     const cantidad = interaction.fields.getTextInputValue('cantidad');
     const metodo = interaction.fields.getTextInputValue('metodo');
     const propina = interaction.fields.getTextInputValue('propina');
+    const guild = interaction.guild;
 
-    const canal = await interaction.guild.channels.create({
+    const canal = await guild.channels.create({
       name: `🛒┃ticket-${interaction.user.username}`,
       type: 0,
-      parent: cfg.CATEGORIA_TICKETS_ID,
+      parent: CATEGORIA_TICKETS_ID,
       permissionOverwrites: [
-        { id: interaction.guild.id, deny: [PermissionsBitField.Flags.ViewChannel] },
-        { id: interaction.user.id,
-          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
-        },
-        { id: cfg.ROLE_STAFF_ID,
-          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
-        }
+        { id: guild.id, deny: [PermissionsBitField.Flags.ViewChannel] },
+        { id: interaction.user.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ReadMessageHistory] },
+        { id: ROLE_STAFF_ID, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ReadMessageHistory] }
       ]
     });
 
-    const embed = new EmbedBuilder()
+    const resumen = new EmbedBuilder()
       .setColor(0x2b8cff)
       .setTitle(`🧾 Pedido de ${interaction.user.username}`)
       .setDescription(
-        `**Producto:** ${producto}\n` +
-        `**Cantidad:** ${cantidad}\n` +
-        `**Pago:** ${metodo}\n` +
-        `**Propina:** ${propina}\n` +
+        `**¿Qué vas a comprar?**\n${producto}\n\n` +
+        `**¿Cuánto vas a comprar?**\n${cantidad}\n\n` +
+        `**Método de pago**\n${metodo}\n\n` +
+        `**Propina**\n${propina}\n\n` +
         `**País:** ${pais.toUpperCase()}`
       )
       .setThumbnail(interaction.user.displayAvatarURL())
@@ -196,110 +172,126 @@ client.on('interactionCreate', async interaction => {
       .setEmoji('🔒')
       .setStyle(ButtonStyle.Danger);
 
+    const rowBotones = new ActionRowBuilder().addComponents(botonCerrar);
+
     await canal.send({
-      content: `<@&${cfg.ROLE_STAFF_ID}> 🔔 Nuevo pedido de <@${interaction.user.id}>`,
-      embeds: [embed],
-      components: [new ActionRowBuilder().addComponents(botonCerrar)]
+      content: `<@&${ROLE_STAFF_ID}> 🔔 Nuevo pedido de <@${interaction.user.id}>`,
+      embeds: [resumen],
+      components: [rowBotones],
     });
 
-    return interaction.reply({
+    await interaction.reply({
       content: `✅ Tu ticket ha sido creado: ${canal}`,
-      ephemeral: true
+      ephemeral: true,
     });
   }
 
-  // ===== PASO 3: Cerrar ticket =====
+  // === PASO 3: Cerrar ticket ===
   if (interaction.isButton() && interaction.customId === 'cerrar_ticket') {
-    await interaction.reply({ content: '🔒 Ticket cerrado', ephemeral: true });
+    const canal = interaction.channel;
+    const user = interaction.user;
 
-    await interaction.channel.send({
-      content: `<@&${cfg.ROLE_STAFF_ID}> El ticket ha sido cerrado.`,
-      embeds: [
-        new EmbedBuilder()
-          .setColor(0xff5555)
-          .setTitle('🔒 Ticket cerrado')
-          .setTimestamp()
-      ],
-      components: [
-        new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId('reabrir_ticket')
-            .setLabel('Reabrir')
-            .setEmoji('🔓')
-            .setStyle(ButtonStyle.Success),
-          new ButtonBuilder()
-            .setCustomId('guardar_ticket')
-            .setLabel('Guardar')
-            .setEmoji('💾')
-            .setStyle(ButtonStyle.Primary),
-          new ButtonBuilder()
-            .setCustomId('eliminar_ticket')
-            .setLabel('Eliminar')
-            .setEmoji('🗑️')
-            .setStyle(ButtonStyle.Secondary)
-        )
-      ]
+    await canal.permissionOverwrites.edit(user.id, { ViewChannel: false });
+
+    const embedCerrado = new EmbedBuilder()
+      .setColor(0xff5555)
+      .setTitle('🔒 Ticket cerrado')
+      .setDescription(`El ticket ha sido cerrado por <@${user.id}>.\nSolo el staff puede verlo ahora.`)
+      .setTimestamp();
+
+    const botonReabrir = new ButtonBuilder()
+      .setCustomId('reabrir_ticket')
+      .setLabel('Reabrir')
+      .setEmoji('🔓')
+      .setStyle(ButtonStyle.Success);
+
+    const botonGuardar = new ButtonBuilder()
+      .setCustomId('guardar_ticket')
+      .setLabel('Guardar')
+      .setEmoji('💾')
+      .setStyle(ButtonStyle.Primary);
+
+    const botonEliminar = new ButtonBuilder()
+      .setCustomId('eliminar_ticket')
+      .setLabel('Eliminar')
+      .setEmoji('🗑️')
+      .setStyle(ButtonStyle.Secondary);
+
+    const row = new ActionRowBuilder().addComponents(botonReabrir, botonGuardar, botonEliminar);
+
+    await canal.send({
+      content: `<@&${ROLE_STAFF_ID}> ⚠️ El ticket ha sido cerrado.`,
+      embeds: [embedCerrado],
+      components: [row]
     });
 
-    await interaction.channel.permissionOverwrites.edit(interaction.user.id, {
-      ViewChannel: false
-    });
+    await interaction.reply({ content: '✅ Has cerrado este ticket.', ephemeral: true });
   }
 
-  // ===== PASO 4: Reabrir ticket =====
+  // === PASO 4: Reabrir ticket ===
   if (interaction.isButton() && interaction.customId === 'reabrir_ticket') {
-    const ticketOwner = interaction.channel.name.split('ticket-')[1];
-    const miembro = interaction.guild.members.cache.find(m => m.user.username === ticketOwner);
+    const canal = interaction.channel;
+    const user = interaction.user;
+    const ticketOwner = canal.name.split('ticket-')[1];
+    const miembro = canal.guild.members.cache.find(m => m.user.username === ticketOwner);
 
     if (miembro) {
-      await interaction.channel.permissionOverwrites.edit(miembro.id, {
+      await canal.permissionOverwrites.edit(miembro.id, {
         ViewChannel: true,
-        SendMessages: true
+        SendMessages: true,
+        ReadMessageHistory: true
       });
     }
 
-    return interaction.reply({ content: '🔓 Ticket reabierto.', ephemeral: true });
+    await interaction.reply({ content: '🔓 Ticket reabierto.', ephemeral: true });
   }
 
-  // ===== PASO 5: Guardar ticket =====
+  // === PASO 5: Guardar ticket (transcripción completa) ===
   if (interaction.isButton() && interaction.customId === 'guardar_ticket') {
-    const mensajes = await interaction.channel.messages.fetch({ limit: 100 });
-    const texto = mensajes.reverse().map(m => `[${m.author?.tag}]: ${m.content}`).join('\n');
+    const canal = interaction.channel;
+    const mensajes = await canal.messages.fetch({ limit: 100 });
+    const contenido = mensajes
+      .reverse()
+      .map(m => `[${m.author?.tag || 'Desconocido'}]: ${m.content}`)
+      .join('\n');
 
-    const archivo = `ticket-${interaction.channel.id}.txt`;
-    fs.writeFileSync(archivo, texto);
+    const archivo = `ticket-${canal.name}.txt`;
+    fs.writeFileSync(archivo, contenido);
 
-    const logChannel = await client.channels.fetch(cfg.LOGS_CHANNEL_ID);
-    await logChannel.send({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(0x2b8cff)
-          .setTitle('💾 Ticket guardado')
-          .setDescription(`Guardado por: <@${interaction.user.id}>`)
-          .setTimestamp()
-      ],
-      files: [archivo]
-    });
+    const file = new AttachmentBuilder(archivo);
+    const logEmbed = new EmbedBuilder()
+      .setColor(0x2b8cff)
+      .setTitle('💾 Ticket guardado')
+      .setDescription(`Ticket: ${canal.name}\nGuardado por <@${interaction.user.id}>`)
+      .setTimestamp();
+
+    const logChannel = await client.channels.fetch(LOGS_CHANNEL_ID);
+    await logChannel.send({ embeds: [logEmbed], files: [file] });
 
     fs.unlinkSync(archivo);
-    return interaction.reply({ content: '💾 Ticket guardado.', ephemeral: true });
+    await interaction.reply({ content: '💾 Ticket guardado correctamente.', ephemeral: true });
   }
 
-  // ===== PASO 6: Eliminar ticket =====
+  // === PASO 6: Eliminar ticket ===
   if (interaction.isButton() && interaction.customId === 'eliminar_ticket') {
-    await interaction.reply({ content: '🗑️ Eliminando...', ephemeral: true });
+    await interaction.reply({ content: '🗑️ Eliminando ticket...', ephemeral: true });
     setTimeout(() => interaction.channel.delete(), 2000);
   }
 });
 
-// ============== SERVIDOR PARA RAILWAY/RENDER ==============
+client.login(process.env.TOKEN);
+
+// === Mantener el servicio vivo en Render ===
 const express = require("express");
 const app = express();
 
-app.get("/", (req, res) => res.send("Bot activo 24/7 🔥"));
-
-app.listen(process.env.PORT || 3000, () => {
-  console.log("🌐 Servidor web iniciado");
+app.get("/", (req, res) => {
+    res.send("Bot de UF Shop activo 24/7 🔥");
 });
 
-client.login(TOKEN);
+// Render usa process.env.PORT
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`🌐 Servidor web escuchando en el puerto ${PORT}`);
+});
