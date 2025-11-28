@@ -124,7 +124,7 @@ client.on('interactionCreate', async interaction => {
         new TextInputBuilder()
           .setCustomId('cantidad')
           .setLabel('¿Cuánto vas a comprar?')
-          .setPlaceholder('1000 Robux')
+          .setPlaceholder('1000')
           .setStyle(TextInputStyle.Short)
           .setRequired(true)
       ),
