@@ -65,7 +65,7 @@ client.once("ready", async () => {
       { name: "\u200B", value: "\u200B", inline: true }
     )
     .addFields(
-      { name: '🛒 Cómo comprar', value: `Dirígete al canal <#${CANAL_COMPRA_ID}> e inicia un ticket. Un administrador se comunicará contigo al instante.` },
+      { name: '🛒 Cómo comprar', value: `Dirígete al canal <#${CANAL_ID}> e inicia un ticket. Un administrador se comunicará contigo al instante.` },
       { name: '📦 Tipos de entrega', value: '• Gamepass: Recibirás los Robux en un plazo de hasta 5 días.\n• Grupo: El primer pago tarda aproximadamente 3 días; después las entregas son inmediatas.' }
     )
     .setImage('https://media.discordapp.net/attachments/1419831102779953294/1423146706765090936/fondo-textura-marmol-negro-azul-abstracto_53876-126689.png?format=webp&quality=lossless')
@@ -73,23 +73,6 @@ client.once("ready", async () => {
       text: 'UF Shop | Confianza y rapidez 💙',
       iconURL: 'https://cdn.discordapp.com/attachments/1419831102779953294/1433973290942201866/LOGO.png'
     });
-
-  // 📌 Botón
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setLabel("🛒 COMPRAR")
-      .setStyle(ButtonStyle.Link)
-      .setURL(`https://discord.com/channels/${GUILD_ID}/${CANAL_COMPRA_ID}`)
-  );
-
-  await canal.send({
-    content: "💎 Catálogo actualizado de Robux 💎",
-    embeds: [embed],
-    components: [row],
-  });
-
-  console.log("📨 Catálogo enviado correctamente.");
-  process.exit();
 });
 
 client.login(process.env.TOKEN);
