@@ -116,7 +116,7 @@ client.on('interactionCreate', async interaction => {
         new TextInputBuilder()
           .setCustomId('producto')
           .setLabel('¿Qué vas a comprar?')
-          .setPlaceholder('Ejemplo: Robux, GiftCard, Cuenta, Boost…')
+          .setPlaceholder('Robux')
           .setStyle(TextInputStyle.Short)
           .setRequired(true)
       ),
@@ -124,7 +124,7 @@ client.on('interactionCreate', async interaction => {
         new TextInputBuilder()
           .setCustomId('cantidad')
           .setLabel('¿Cuánto vas a comprar?')
-          .setPlaceholder('Ejemplo: 1000, 5000, 1 unidad…')
+          .setPlaceholder('1000 Robux')
           .setStyle(TextInputStyle.Short)
           .setRequired(true)
       ),
@@ -140,7 +140,7 @@ client.on('interactionCreate', async interaction => {
         new TextInputBuilder()
           .setCustomId('propina')
           .setLabel('¿Darás propina?')
-          .setPlaceholder('Ejemplo: Sí, No, Depende…')
+          .setPlaceholder('Sí, No, Depende…')
           .setStyle(TextInputStyle.Short)
           .setRequired(true)
       )
