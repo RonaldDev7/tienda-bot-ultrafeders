@@ -73,6 +73,22 @@ client.once("ready", async () => {
       text: 'UF Shop | Confianza y rapidez 💙',
       iconURL: 'https://cdn.discordapp.com/attachments/1419831102779953294/1433973290942201866/LOGO.png'
     });
+
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setLabel("🛒 COMPRAR")
+      .setStyle(ButtonStyle.Link)
+      .setURL(`https://discord.com/channels/${GUILD_ID}/${CANAL_ID}`)
+  );
+
+  await canal.send({
+    content: "💎 Catálogo actualizado de Robux 💎",
+    embeds: [embed],
+    components: [row],
+  });
+
+  console.log("📨 Catálogo enviado correctamente.");
+  process.exit();
 });
 
 client.login(process.env.TOKEN);
